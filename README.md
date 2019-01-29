@@ -1,6 +1,6 @@
-##Publitio-API
+## Publitio-API
 
-#INSTALLATION
+# INSTALLATION
 
 To install this module:
 
@@ -11,14 +11,14 @@ To install this module:
 	make test
 	make install
 
-#SUPPORT AND DOCUMENTATION
+# SUPPORT AND DOCUMENTATION
 
 After installing, you can find documentation for this module with the
 perldoc command.
 
     perldoc Publitio::API
 
-#LICENSE AND COPYRIGHT
+# LICENSE AND COPYRIGHT
 
 Copyright (C) 2019 Enn Michael
 
