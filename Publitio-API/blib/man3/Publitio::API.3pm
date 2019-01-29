@@ -73,25 +73,40 @@
 .if n .ad l
 .nh
 .SH "NAME"
-Publitio::API \- The great new Publitio::API!
+Publitio::API \- Perl SDK for https.//publit.io.
 .SH "VERSION"
 .IX Header "VERSION"
 Version 0.01
 .SH "SYNOPSIS"
 .IX Header "SYNOPSIS"
-Quick summary of what the module does.
-.PP
-Perhaps a little code snippet.
-.PP
 .Vb 1
 \&    use Publitio::API;
 \&
-\&    my $foo = Publitio::API\->new();
-\&    ...
+\&    # \*(Aqxxx\*(Aq should be your public key, \*(Aqyyy\*(Aq should be the secret key
+\&    my $publitio_api = Publitio::API\->new(\*(Aqxxx\*(Aq, \*(Aqyyy\*(Aq);
+\&    my $res = $publitio_api.call(\*(Aq/files/show/myfileid\*(Aq);
+\&
+\&    print "$res\->{success}\en";
+\&    print "$res\->{title}\en";
+\&
+\&    # Passing query parameters to the API:
+\&    $res = publitio_api.call(\*(Aq/files/list\*(Aq, \*(AqGET\*(Aq, { limit => 10 });
+\&
+\&    print "$res\->{limit}\en";
+\&    print "$res\->{files_total}\en";
+\&
+\&    # Uploading files or watermarks:
+\&    $res = publitio_api.upload_file(\*(Aqfilename\*(Aq, { title => "My file title" });
+\&    print "$res\->{message}";
+\&    publitio_api.upload_watermark(\*(Aqfilename\*(Aq, { title => "My watermark title" });
+\&    $res = print "$res\->{message}";
 .Ve
 .SH "SUBROUTINES/METHODS"
 .IX Header "SUBROUTINES/METHODS"
 new
+call
+upload_file
+upload_watermark
 .SS "new"
 .IX Subsection "new"
 Create new instance of the \s-1API.\s0 First parameter is the \s-1API\s0 key, second is
@@ -100,18 +115,16 @@ the \s-1API\s0 secret. You can get those from your dashboard.
 .IX Subsection "call"
 Make the \s-1REST API\s0 call. First parameter is the \s-1REST\s0 path, second is the request
 method ('\s-1GET\s0', '\s-1POST\s0', '\s-1PUT\s0', '\s-1DELETE\s0' \- defaults to '\s-1GET\s0'), third is a hashref of
-query parameters. If you need to upload a file, see upload.
+query parameters. If you need to upload a file or watermark,
+use upload_file or upload_watermark.
 .SS "upload_file"
 .IX Subsection "upload_file"
-Upload (create) a file. The first parameter is the filehandle reference
+Upload a local file. The first parameter is the filehandle reference
 opened for reading, second parameter is a hashref of query parameters.
-.SS "upload_remote_file"
-.IX Subsection "upload_remote_file"
-Upload (create) a remote file. The first and only parameter is the remote file \s-1URL.\s0
 .SS "upload_watermark"
 .IX Subsection "upload_watermark"
-Upload a watermark. The first and only parameter is the watermark filehandle
-reference opened for reading.
+Upload a watermark. The first parameter is the watermark filename and the second
+parameter is a hashref of query parameters.
 .SH "AUTHOR"
 .IX Header "AUTHOR"
 Enn Michael, \f(CW\*(C`<enntheprogrammer at gmail.com>\*(C'\fR

@@ -12,7 +12,7 @@ use HTTP::Request::Common qw(POST);
 
 =head1 NAME
 
-Publitio::API - The great new Publitio::API!
+Publitio::API - Perl SDK for https.//publit.io.
 
 =head1 VERSION
 
@@ -25,18 +25,51 @@ our $VERSION = '0.01';
 
 =head1 SYNOPSIS
 
-Quick summary of what the module does.
-
-Perhaps a little code snippet.
+Read the docs at https://publit.io/docs/.
 
     use Publitio::API;
 
-    my $foo = Publitio::API->new();
-    ...
+    # 'xxx' should be your public key, 'yyy' should be the secret key
+    my $publitio_api = Publitio::API->new('ktuZkDrpfA3M7t3txAp0', 'RWnZpAdRa8olrNaDjsZp1Q5VbWgznwy8');
+    my $res = $publitio_api->call('/files/show/Am765xmB');
+
+    print "$res->{title}\n";
+    print "$res->{message}\n";
+
+    # Passing query parameters to the API:
+    $res = $publitio_api->call('/files/list', 'GET', { limit => 10 });
+
+    print "$res->{limit}\n";
+    print "$res->{files_total}\n";
+    print "$res->{message}\n";
+
+    # Uploading files or watermarks:
+    $res = $publitio_api->upload_file('/home/johnc/Downloads/News.jpeg', { title => "My file title" });
+    print "$res->{message}\n";
+    $publitio_api->upload_watermark('/home/johnc/Downloads/News.jpeg', { name => "watmrk" });
+    print "$res->{message}\n";
+
+    $res = $publitio_api->call('/files/update/Am765xmB', 'PUT', { title => "No more news" });
+    print "$res->{message}\n";
+
+    $res = $publitio_api->call('/folders/create', 'POST', { name => 'Stfyx' });
+    print "$res->{message}\n";
+
+    $res = $publitio_api->call("/folders/delete/$res->{id}", 'DELETE');
+    print "$res->{message}\n";
+
+    $res = $publitio_api->upload_file('/home/johnc/Downloads/News.jpeg', { title => "My other title" });
+    print "$res->{message}\n";
+
+    $res = $publitio_api->call("/files/update/$res->{id}", 'PUT', { title => "My new title" });
+    print "$res->{message}\n";
 
 =head1 SUBROUTINES/METHODS
 
 new
+call
+upload_file
+upload_watermark
 
 =head2 new
 
@@ -58,7 +91,8 @@ sub new {
 
 Make the REST API call. First parameter is the REST path, second is the request
 method ('GET', 'POST', 'PUT', 'DELETE' - defaults to 'GET'), third is a hashref of
-query parameters. If you need to upload a file, see upload.
+query parameters. If you need to upload a file or watermark,
+use upload_file or upload_watermark.
 
 =cut
 
@@ -72,7 +106,7 @@ sub call {
     my $ua = LWP::UserAgent->new;
     my $res;
 
-    if ($method eq 'POST') {
+    if ($method eq 'POST MULTIPART') {
         $res = $ua->request($self->_post_multipart_request($raw_uri, $params, $filename));
     } else {
         $res = $ua->request($self->_usual_request($raw_uri, $method, $params));
@@ -108,6 +142,10 @@ sub _uri {
     my $self = shift;
     my $raw_uri = shift;
     my $params = shift;
+
+    if (substr($raw_uri, 0, 1) eq '/') {
+        $raw_uri = substr($raw_uri, 1, length($raw_uri) - 1);
+    }
 
     my $uri = URI->new("https://api.publit.io/v1/$raw_uri");
     $uri->query_form(%{$params}, $self->_signature($uri));
@@ -159,7 +197,7 @@ sub upload_file {
 
     $self->call(
         'files/create',
-        'POST',
+        'POST MULTIPART',
         $params,
         $filename,
     );
@@ -174,8 +212,8 @@ sub _read_entire_file {
 
 =head2 upload_watermark
 
-Upload a watermark. The first and only parameter is the watermark filehandle
-reference opened for reading.
+Upload a watermark. The first parameter is the watermark filename and the second
+parameter is a hashref of query parameters.
 
 =cut
 
@@ -186,7 +224,7 @@ sub upload_watermark {
 
     $self->call(
         'watermarks/create',
-        'POST',
+        'POST MULTIPART',
         $params,
         $filename,
     );
