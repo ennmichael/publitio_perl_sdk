@@ -8,6 +8,7 @@ use Digest::SHA qw(sha1_hex);
 use LWP::UserAgent;
 use URI;
 use JSON;
+use HTTP::Request::Common qw(POST);
 
 =head1 NAME
 
@@ -47,8 +48,6 @@ the API secret. You can get those from your dashboard.
 sub new {
     my $class = shift;
 
-    # TODO Exception if $class is a reference (I suppose)
-
     my $key = shift;
     my $secret = shift;
 
@@ -68,30 +67,41 @@ sub call {
     my $raw_uri = shift;
     my $method = shift || 'GET';
     my $params = shift;
-    my $content = shift;
+    my $filename = shift;
 
     my $ua = LWP::UserAgent->new;
-    my $res = $ua->request($self->_request($raw_uri, $method, $params, $content));
+    my $res;
+
+    if ($method eq 'POST') {
+        $res = $ua->request($self->_post_multipart_request($raw_uri, $params, $filename));
+    } else {
+        $res = $ua->request($self->_usual_request($raw_uri, $method, $params));
+    }
 
     die $res->status_line unless $res->is_success;
 
     JSON->new->decode($res->content);
 }
 
-sub _request {
+sub _usual_request {
     my $self = shift;
     my $raw_uri = shift;
     my $method = shift;
     my $params = shift;
-    my $content = shift;
 
-    my $req = HTTP::Request->new($method => $self->_uri($raw_uri, $params));
+    HTTP::Request->new($method => $self->_uri($raw_uri, $params));
+}
 
-    if (defined($content)) {
-        $req->content($content);
-    }
+sub _post_multipart_request {
+    my $self = shift;
+    my $raw_uri = shift;
+    my $params = shift;
+    my $filename = shift;
 
-    $req;
+    POST($self->_uri($raw_uri, $params),
+        Content_Type => 'form-data',
+        Content => [file => [$filename]],
+    );
 }
 
 sub _uri {
@@ -101,6 +111,9 @@ sub _uri {
 
     my $uri = URI->new("https://api.publit.io/v1/$raw_uri");
     $uri->query_form(%{$params}, $self->_signature($uri));
+
+    print "$uri\n";
+
     $uri;
 }
 
@@ -134,16 +147,22 @@ sub _nonce {
 
 =head2 upload_file
 
-Upload (create) a file. The first and only parameter is the filehandle
-reference opened for reading.
+Upload a local file. The first parameter is the filehandle reference
+opened for reading, second parameter is a hashref of query parameters.
 
 =cut
 
 sub upload_file {
     my $self = shift;
-    my $filehandle = shift;
-    my $content = $self->_read_entire_file($filehandle);
-    $self->call('/files/create', 'POST', undef, $content);
+    my $filename = shift;
+    my $params = shift;
+
+    $self->call(
+        'files/create',
+        'POST',
+        $params,
+        $filename,
+    );
 }
 
 sub _read_entire_file {
@@ -151,16 +170,6 @@ sub _read_entire_file {
     my $result;
     $result .= $_ while (<$filehandle>);
     $result;
-}
-
-=head2 upload_remote_file
-
-Upload (create) a remote file. The first and only parameter is the remote file URL.
-
-=cut
-
-sub upload_remote_file {
-
 }
 
 =head2 upload_watermark
@@ -171,7 +180,16 @@ reference opened for reading.
 =cut
 
 sub upload_watermark {
+    my $self = shift;
+    my $filename = shift;
+    my $params = shift;
 
+    $self->call(
+        'watermarks/create',
+        'POST',
+        $params,
+        $filename,
+    );
 }
 
 =head1 AUTHOR

@@ -103,8 +103,8 @@ method ('\s-1GET\s0', '\s-1POST\s0', '\s-1PUT\s0', '\s-1DELETE\s0' \- defaults t
 query parameters. If you need to upload a file, see upload.
 .SS "upload_file"
 .IX Subsection "upload_file"
-Upload (create) a file. The first and only parameter is the filehandle
-reference opened for reading.
+Upload (create) a file. The first parameter is the filehandle reference
+opened for reading, second parameter is a hashref of query parameters.
 .SS "upload_remote_file"
 .IX Subsection "upload_remote_file"
 Upload (create) a remote file. The first and only parameter is the remote file \s-1URL.\s0
