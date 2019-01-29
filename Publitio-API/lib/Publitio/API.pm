@@ -185,8 +185,8 @@ sub _nonce {
 
 =head2 upload_file
 
-Upload a local file. The first parameter is the filehandle reference
-opened for reading, second parameter is a hashref of query parameters.
+Upload a local file. The first parameter is the filename, second parameter
+is a hashref of query parameters.
 
 =cut
 

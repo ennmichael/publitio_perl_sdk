@@ -79,27 +79,45 @@ Publitio::API \- Perl SDK for https.//publit.io.
 Version 0.01
 .SH "SYNOPSIS"
 .IX Header "SYNOPSIS"
+Read the docs at https://publit.io/docs/.
+.PP
 .Vb 1
 \&    use Publitio::API;
 \&
 \&    # \*(Aqxxx\*(Aq should be your public key, \*(Aqyyy\*(Aq should be the secret key
-\&    my $publitio_api = Publitio::API\->new(\*(Aqxxx\*(Aq, \*(Aqyyy\*(Aq);
-\&    my $res = $publitio_api.call(\*(Aq/files/show/myfileid\*(Aq);
+\&    my $publitio_api = Publitio::API\->new(\*(AqktuZkDrpfA3M7t3txAp0\*(Aq, \*(AqRWnZpAdRa8olrNaDjsZp1Q5VbWgznwy8\*(Aq);
+\&    my $res = $publitio_api\->call(\*(Aq/files/show/Am765xmB\*(Aq);
 \&
-\&    print "$res\->{success}\en";
 \&    print "$res\->{title}\en";
+\&    print "$res\->{message}\en";
 \&
 \&    # Passing query parameters to the API:
-\&    $res = publitio_api.call(\*(Aq/files/list\*(Aq, \*(AqGET\*(Aq, { limit => 10 });
+\&    $res = $publitio_api\->call(\*(Aq/files/list\*(Aq, \*(AqGET\*(Aq, { limit => 10 });
 \&
 \&    print "$res\->{limit}\en";
 \&    print "$res\->{files_total}\en";
+\&    print "$res\->{message}\en";
 \&
 \&    # Uploading files or watermarks:
-\&    $res = publitio_api.upload_file(\*(Aqfilename\*(Aq, { title => "My file title" });
-\&    print "$res\->{message}";
-\&    publitio_api.upload_watermark(\*(Aqfilename\*(Aq, { title => "My watermark title" });
-\&    $res = print "$res\->{message}";
+\&    $res = $publitio_api\->upload_file(\*(Aq/home/johnc/Downloads/News.jpeg\*(Aq, { title => "My file title" });
+\&    print "$res\->{message}\en";
+\&    $publitio_api\->upload_watermark(\*(Aq/home/johnc/Downloads/News.jpeg\*(Aq, { name => "watmrk" });
+\&    print "$res\->{message}\en";
+\&
+\&    $res = $publitio_api\->call(\*(Aq/files/update/Am765xmB\*(Aq, \*(AqPUT\*(Aq, { title => "No more news" });
+\&    print "$res\->{message}\en";
+\&
+\&    $res = $publitio_api\->call(\*(Aq/folders/create\*(Aq, \*(AqPOST\*(Aq, { name => \*(AqStfyx\*(Aq });
+\&    print "$res\->{message}\en";
+\&
+\&    $res = $publitio_api\->call("/folders/delete/$res\->{id}", \*(AqDELETE\*(Aq);
+\&    print "$res\->{message}\en";
+\&
+\&    $res = $publitio_api\->upload_file(\*(Aq/home/johnc/Downloads/News.jpeg\*(Aq, { title => "My other title" });
+\&    print "$res\->{message}\en";
+\&
+\&    $res = $publitio_api\->call("/files/update/$res\->{id}", \*(AqPUT\*(Aq, { title => "My new title" });
+\&    print "$res\->{message}\en";
 .Ve
 .SH "SUBROUTINES/METHODS"
 .IX Header "SUBROUTINES/METHODS"
@@ -119,8 +137,8 @@ query parameters. If you need to upload a file or watermark,
 use upload_file or upload_watermark.
 .SS "upload_file"
 .IX Subsection "upload_file"
-Upload a local file. The first parameter is the filehandle reference
-opened for reading, second parameter is a hashref of query parameters.
+Upload a local file. The first parameter is the filename, second parameter
+is a hashref of query parameters.
 .SS "upload_watermark"
 .IX Subsection "upload_watermark"
 Upload a watermark. The first parameter is the watermark filename and the second

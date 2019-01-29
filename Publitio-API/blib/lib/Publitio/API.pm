@@ -25,27 +25,44 @@ our $VERSION = '0.01';
 
 =head1 SYNOPSIS
 
+Read the docs at https://publit.io/docs/.
+
     use Publitio::API;
 
     # 'xxx' should be your public key, 'yyy' should be the secret key
-    my $publitio_api = Publitio::API->new('xxx', 'yyy');
-    my $res = $publitio_api.call('/files/show/myfileid');
+    my $publitio_api = Publitio::API->new('ktuZkDrpfA3M7t3txAp0', 'RWnZpAdRa8olrNaDjsZp1Q5VbWgznwy8');
+    my $res = $publitio_api->call('/files/show/Am765xmB');
 
-    print "$res->{success}\n";
     print "$res->{title}\n";
+    print "$res->{message}\n";
 
     # Passing query parameters to the API:
-    $res = publitio_api.call('/files/list', 'GET', { limit => 10 });
+    $res = $publitio_api->call('/files/list', 'GET', { limit => 10 });
 
     print "$res->{limit}\n";
     print "$res->{files_total}\n";
+    print "$res->{message}\n";
 
     # Uploading files or watermarks:
-    $res = publitio_api.upload_file('filename', { title => "My file title" });
-    print "$res->{message}";
-    publitio_api.upload_watermark('filename', { title => "My watermark title" });
-    $res = print "$res->{message}";
+    $res = $publitio_api->upload_file('/home/johnc/Downloads/News.jpeg', { title => "My file title" });
+    print "$res->{message}\n";
+    $publitio_api->upload_watermark('/home/johnc/Downloads/News.jpeg', { name => "watmrk" });
+    print "$res->{message}\n";
 
+    $res = $publitio_api->call('/files/update/Am765xmB', 'PUT', { title => "No more news" });
+    print "$res->{message}\n";
+
+    $res = $publitio_api->call('/folders/create', 'POST', { name => 'Stfyx' });
+    print "$res->{message}\n";
+
+    $res = $publitio_api->call("/folders/delete/$res->{id}", 'DELETE');
+    print "$res->{message}\n";
+
+    $res = $publitio_api->upload_file('/home/johnc/Downloads/News.jpeg', { title => "My other title" });
+    print "$res->{message}\n";
+
+    $res = $publitio_api->call("/files/update/$res->{id}", 'PUT', { title => "My new title" });
+    print "$res->{message}\n";
 
 =head1 SUBROUTINES/METHODS
 
@@ -168,8 +185,8 @@ sub _nonce {
 
 =head2 upload_file
 
-Upload a local file. The first parameter is the filehandle reference
-opened for reading, second parameter is a hashref of query parameters.
+Upload a local file. The first parameter is the filename, second parameter
+is a hashref of query parameters.
 
 =cut
 
