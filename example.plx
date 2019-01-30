@@ -1,7 +1,7 @@
 use Publitio::API;
 
 # 'xxx' should be your public key, 'yyy' should be the secret key
-my $publitio_api = Publitio::API->new('ktuZkDrpfA3M7t3txAp0', 'RWnZpAdRa8olrNaDjsZp1Q5VbWgznwy8');
+my $publitio_api = Publitio::API->new('xxx', 'yyy');
 my $res = $publitio_api->call('/files/show/Am765xmB');
 
 print "$res->{title}\n";
