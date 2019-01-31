@@ -150,8 +150,6 @@ sub _uri {
     my $uri = URI->new("https://api.publit.io/v1/$raw_uri");
     $uri->query_form(%{$params}, $self->_signature($uri));
 
-    print "$uri\n";
-
     $uri;
 }
 
