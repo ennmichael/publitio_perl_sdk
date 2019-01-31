@@ -17,6 +17,30 @@ You'll probably also have run the following before usage:
 
 If running `make install` fails for you, try using `sudo`.
 
+## EXAMPLE USAGE
+
+    use Publitio::API;
+
+    # 'xxx' should be your public key, 'yyy' should be the secret key
+    my $publitio_api = Publitio::API->new('xxx', 'yyy');
+    my $res = $publitio_api->call('/files/show/Am765xmB');
+
+    print "$res->{title}\n";
+    print "$res->{message}\n";
+
+    # Passing query parameters to the API:
+    $res = $publitio_api->call('/files/list', 'GET', { limit => 10 });
+
+    print "$res->{limit}\n";
+    print "$res->{files_total}\n";
+    print "$res->{message}\n";
+
+    # Uploading files or watermarks:
+    $res = $publitio_api->upload_file('/home/johnc/Downloads/News.jpeg', { title => "My file title" });
+    print "$res->{message}\n";
+    $publitio_api->upload_watermark('/home/johnc/Downloads/News.jpeg', { name => "watmrk" });
+    print "$res->{message}\n";
+
 ## SUPPORT AND DOCUMENTATION
 
 After installing, you can find documentation for this module with the
