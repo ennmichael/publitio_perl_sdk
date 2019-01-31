@@ -15,7 +15,7 @@ You'll probably also have run the following before usage:
     cpan JSON # Install the JSON module
     cpan LWP # Install the LWP module
 
-If running `make install` fails for you, try to use `sudo`.
+If running `make install` fails for you, try using `sudo`.
 
 ## SUPPORT AND DOCUMENTATION
 
