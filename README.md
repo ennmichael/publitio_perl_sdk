@@ -5,11 +5,11 @@
 To install this module:
 
     git clone https://github.com/ennmichael/publitio_perl_sdk
-    cl publitio_perl_sdk/Publitio-API
-	perl Makefile.PL
-	make
-	make test
-	make install
+    cd publitio_perl_sdk/Publitio-API
+    perl Makefile.PL
+    make
+    make test
+    make install
 
 ## SUPPORT AND DOCUMENTATION
 
