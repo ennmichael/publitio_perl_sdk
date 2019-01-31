@@ -8,8 +8,14 @@ To install this module:
     cd publitio_perl_sdk/Publitio-API
     perl Makefile.PL
     make
-    make test
     make install
+
+You'll probably also have run the following before usage:
+
+    cpan JSON # Install the JSON module
+    cpan LWP # Install the LWP module
+
+If running `make install` fails for you, try to use `sudo`.
 
 ## SUPPORT AND DOCUMENTATION
 
